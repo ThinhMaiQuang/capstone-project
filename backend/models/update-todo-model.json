@@ -17,8 +17,11 @@
     },
     "numberOfLike": {
       "type": "string"
+    },
+    "userId": {
+      "type": "string"
     }
   },
-  "required": ["name", "dueDate", "done", "content", "numberOfLike"],
+  "required": ["name", "dueDate", "done", "content", "numberOfLike", "userId"],
   "additionalProperties": false
 }
