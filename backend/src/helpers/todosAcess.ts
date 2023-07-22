@@ -41,6 +41,15 @@ export class TodosAccess {
     return item
   }
 
+  public async deleteAttachment(attachmentId: string) {
+    const attachmentUtil = new AttachmentUtils()
+    if (!attachmentId) {
+      logger.info(`Unable to delete attachment: ${attachmentId}`)
+      return
+    }
+    return await attachmentUtil.deteleAttachment(attachmentId)
+  }
+
   public async createPresignedUrl(
     userId: string,
     todoId: string,
@@ -99,35 +108,79 @@ export class TodosAccess {
     }
   }
 
+  public async getTodoById(todoId: string): Promise<TodoItem> {
+    logger.info(`Fetched todo id ${todoId} `)
+    try {
+      const result = await this.document
+        .scan({
+          TableName: this.table,
+          FilterExpression: 'attribute_exists(userId) AND todoId = :todoId',
+          ExpressionAttributeValues: {
+            ':todoId': todoId
+          }
+        })
+        .promise()
+      logger.info(`Success - Fetched todo id ${result} `)
+      return result.Items[0] as TodoItem
+    } catch (err) {
+      logger.error(`Error ${err.stack}`)
+      return { todoId: null } as TodoItem
+    }
+  }
+
+  public async getPublicTodo(): Promise<TodoItem[]> {
+    logger.info(`Fetched public Todo `)
+    try {
+      const result = await this.document
+        .scan({
+          TableName: this.table,
+          FilterExpression: 'attribute_exists(userId) AND done = true'
+        })
+        .promise()
+      logger.info(`Success - Fetched todo id ${result} `)
+      return result.Items as TodoItem[]
+    } catch (err) {
+      logger.error(`Error ${err.stack}`)
+      return [] as TodoItem[]
+    }
+  }
+
   public async updateTodo(userId: string, todoId: string, req: TodoUpdate) {
     if (!userId) {
       logger.error(`User ${userId} is not exists`)
     } else {
       logger.info(`Start update todo id: ${todoId}`)
+      try {
+        await this.document
+          .update({
+            TableName: this.table,
+            Key: {
+              todoId,
+              userId
+            },
+            UpdateExpression:
+              'set #name = :name, #dueDate = :dueDate, #done = :done, #content = :content, #numberOfLike = :numberOfLike',
+            ExpressionAttributeNames: {
+              '#name': 'name',
+              '#dueDate': 'dueDate',
+              '#done': 'done',
+              '#content': 'content',
+              '#numberOfLike': 'numberOfLike'
+            },
+            ExpressionAttributeValues: {
+              ':name': req.name,
+              ':dueDate': req.dueDate,
+              ':done': req.done,
+              ':content': req.content,
+              ':numberOfLike': req.numberOfLike
+            }
+          })
+          .promise()
 
-      await this.document
-        .update({
-          TableName: this.table,
-          Key: {
-            todoId,
-            userId
-          },
-          UpdateExpression:
-            'set #name = :name, #dueDate = :dueDate, #done = :done',
-          ExpressionAttributeNames: {
-            '#name': 'name',
-            '#dueDate': 'dueDate',
-            '#done': 'done'
-          },
-          ExpressionAttributeValues: {
-            ':name': req.name,
-            ':dueDate': req.dueDate,
-            ':done': req.done
-          }
-        })
-        .promise()
-
-      logger.info('Updated success ', req)
+        logger.info('Updated success ', req)
+      } catch (error) {
+        logger.info(`Updated false with error ${error} `)
+      }
     }
   }
 

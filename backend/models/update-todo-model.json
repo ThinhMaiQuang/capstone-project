@@ -11,12 +11,14 @@
     },
     "done": {
       "type": "boolean"
+    },
+    "content": {
+      "type": "string"
+    },
+    "numberOfLike": {
+      "type": "string"
     }
   },
-  "required": [
-    "name",
-    "dueDate",
-    "done"
-  ],
+  "required": ["name", "dueDate", "done", "content", "numberOfLike"],
   "additionalProperties": false
 }

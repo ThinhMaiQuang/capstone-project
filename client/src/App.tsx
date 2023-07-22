@@ -104,7 +104,15 @@ export default class App extends Component<AppProps, AppState> {
           }}
         />
 
-        <Route component={NotFound} />
+         <Route
+          path="/todos/create/:todoId"
+          exact
+          render={props => {
+            return <EditTodo {...props} auth={this.props.auth} />
+          }}
+        />
+
+        {/* <Route component={NotFound} /> */}
       </Switch>
     )
   }
