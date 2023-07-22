@@ -134,10 +134,14 @@ export class TodosAccess {
       const result = await this.document
         .scan({
           TableName: this.table,
-          FilterExpression: 'attribute_exists(userId) AND done = true'
+          FilterExpression:
+            'attribute_exists(userId) AND attribute_exists(todoId) AND done = :value',
+          ExpressionAttributeValues: {
+            ':value': true // Specify the value 'true' of type BOOL
+          }
         })
         .promise()
-      logger.info(`Success - Fetched todo id ${result} `)
+      logger.info(`Success - Fetched public ${JSON.stringify(result)} `)
       return result.Items as TodoItem[]
     } catch (err) {
       logger.error(`Error ${err.stack}`)

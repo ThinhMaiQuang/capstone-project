@@ -23,7 +23,7 @@ export class AttachmentUtils {
 
   public async deteleAttachment(attachmentId: string) {
     return this.s3.deleteObject({
-      Bucket: 'ExampleBucket',
+      Bucket: this.s3Bucket,
       Key: attachmentId
     })
   }

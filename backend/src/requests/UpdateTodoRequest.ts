@@ -7,4 +7,5 @@ export interface UpdateTodoRequest {
   done: boolean
   content: string
   numberOfLike: string
+  userId: string
 }
