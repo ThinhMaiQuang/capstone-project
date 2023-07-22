@@ -6,4 +6,6 @@ export interface TodoItem {
   dueDate: string
   done: boolean
   attachmentUrl?: string
+  content: string
+  numberOfLike: string
 }

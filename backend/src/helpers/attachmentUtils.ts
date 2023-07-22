@@ -20,4 +20,11 @@ export class AttachmentUtils {
       Expires: this.expires
     }) as string
   }
+
+  public async deteleAttachment(attachmentId: string) {
+    return this.s3.deleteObject({
+      Bucket: 'ExampleBucket',
+      Key: attachmentId
+    })
+  }
 }

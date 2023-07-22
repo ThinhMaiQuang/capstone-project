@@ -22,12 +22,17 @@ export async function createTodo(
       done: false,
       attachmentUrl: null,
       name: req.name,
-      dueDate: req.dueDate
+      dueDate: req.dueDate,
+      content: req.content
     }
 
     return todoAccess.createTodo(newTodo)
   }
   return null
+}
+
+export async function getTodosbyId(todoId: string): Promise<TodoItem> {
+  return await todoAccess.getTodoById(todoId)
 }
 
 export async function createAttachmentPresignedUrl(
@@ -38,8 +43,16 @@ export async function createAttachmentPresignedUrl(
   return await todoAccess.createPresignedUrl(userId, todoId, attachmentId)
 }
 
+export async function deleteAttachment(attachmentId: string) {
+  return await todoAccess.deleteAttachment(attachmentId)
+}
+
 export async function getTodosForUser(userId: string): Promise<TodoItem[]> {
   return await todoAccess.getUserTodo(userId)
+}
+
+export async function getPublicTodo(): Promise<TodoItem[]> {
+  return await todoAccess.getPublicTodo()
 }
 
 export async function updateTodo(
